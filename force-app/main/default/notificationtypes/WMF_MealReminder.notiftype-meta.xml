@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomNotificationType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customNotifTypeName>WMF_MealReminder</customNotifTypeName>
+    <description>Meal logging reminder sent when no meal has been logged in 18 hours</description>
+    <desktop>true</desktop>
+    <masterLabel>WMF Meal Reminder</masterLabel>
+    <mobile>true</mobile>
+    <slack>false</slack>
+</CustomNotificationType>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Logged_DateTime__c</fullName>
+    <description>Date and time the meal was captured. Used in Phase 3 for local-calendar-day aggregation.</description>
+    <label>Logged Date/Time</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>DateTime</type>
+</CustomField>

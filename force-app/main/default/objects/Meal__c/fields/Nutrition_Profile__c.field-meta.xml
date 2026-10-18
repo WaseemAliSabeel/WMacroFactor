@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Nutrition_Profile__c</fullName>
+    <description>The nutrition profile this meal is logged against. Master-detail: a profile must exist before a meal can be logged, and deleting the profile cascades to its meals.</description>
+    <label>Nutrition Profile</label>
+    <referenceTo>Nutrition_Profile__c</referenceTo>
+    <relationshipLabel>Meals</relationshipLabel>
+    <relationshipName>Meals</relationshipName>
+    <relationshipOrder>0</relationshipOrder>
+    <reparentableMasterDetail>true</reparentableMasterDetail>
+    <trackTrending>false</trackTrending>
+    <type>MasterDetail</type>
+    <writeRequiresMasterRead>false</writeRequiresMasterRead>
+</CustomField>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>NP_Current_User__c</fullName>
+    <description>TRUE when this Meal&apos;s Nutrition Profile is linked to the currently logged-in user. Evaluated as a formula at read time — used for list view filtering.</description>
+    <formula>Nutrition_Profile__r.User__c = $User.Id</formula>
+    <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+    <label>NP=Current User</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

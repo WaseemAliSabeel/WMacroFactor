@@ -1,0 +1,859 @@
+/* ── Root: phone-first, expand on desktop ───── */
+.wmf-capture {
+    padding: 1rem;
+    max-width: 960px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    position: relative;
+    border-radius: 0.5rem;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    /* Light mode: solid white card so text is readable on any page background */
+    background: #ffffff;
+    border: 1px solid #dddbda;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    color: #16325c;
+    /* Mobile: stop an upward overscroll from triggering the app's pull-to-refresh
+       (which would reload the page and lose the capture context mid-logging). */
+    overscroll-behavior-y: contain;
+}
+
+/* ── Header row: Welcome title (left) + Refresh/theme-toggle icons (right) ───── */
+.wmf-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.wmf-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.welcome-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #16325c;
+}
+
+.wmf-dark .welcome-title { color: #ffffff; }
+
+/* ── Gradient on the profile user's first name only ──────────────────────── */
+.wmf-name-gradient {
+    background: linear-gradient(90deg, #7B9EE8 0%, #D4688A 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent; /* fallback for browsers without -webkit-text-fill-color */
+}
+
+/* ── Nutrition Profile gate ───────────────────────────────────── */
+.profile-gate-loading {
+    display: flex;
+    justify-content: center;
+    padding: 2rem 0;
+}
+
+.profile-gate-card {
+    width: 100%;
+    text-align: center;
+    padding: 1.5rem 1rem;
+    background: #fffbf0;
+    border: 1px solid #f0d070;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    box-sizing: border-box;
+}
+
+.profile-gate-text { margin: 0; font-size: 1rem; color: #8a6200; font-weight: 600; }
+
+.wmf-dark .profile-gate-card {
+    background: #24314a;
+    border-color: #3a4a68;
+}
+.wmf-dark .profile-gate-text { color: #ffd479; }
+
+/* ── Profile-switcher modal ──────────────────── */
+.wmf-modal-header {
+    background: #16325c;
+}
+
+.wmf-modal-title {
+    color: #ffffff !important;
+    font-weight: 700;
+}
+
+.wmf-profile-tile-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.wmf-profile-tile {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.75rem 1rem;
+    border: 2px solid #dddbda;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    background: #f9fafb;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+    outline: none;
+}
+
+.wmf-profile-tile:hover,
+.wmf-profile-tile:focus {
+    border-color: #0070d2;
+    background: #f0f4ff;
+}
+
+.wmf-profile-tile--selected {
+    border-color: #0070d2;
+    background: #e8f0ff;
+}
+
+.wmf-tile-check {
+    width: 1.4rem;
+    height: 1.4rem;
+    border-radius: 50%;
+    border: 2px solid #c9c9c9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: #fff;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.wmf-tile-check--selected {
+    border-color: #0070d2;
+    background: #0070d2;
+}
+
+/* User avatar in profile-switcher tile */
+.wmf-tile-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 2px solid #e0e0e0;
+}
+
+.wmf-tile-avatar--placeholder {
+    background: #edf1f7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wmf-tile-content { flex: 1; min-width: 0; }
+
+.wmf-tile-name {
+    margin: 0;
+    font-size: 0.925rem;
+    font-weight: 700;
+    color: #16325c;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.wmf-tile-meta {
+    margin: 0.2rem 0 0;
+    font-size: 0.775rem;
+    color: #5c6b82;
+}
+
+/* ── Dark mode (SLDS navy) ───────────────────── */
+.wmf-dark {
+    background: #0a2540;
+    color: #e8eef7;
+    border-color: #1c4574;
+    box-shadow: none;
+}
+.wmf-dark .analysing-text,
+.wmf-dark .result-notes-text,
+.wmf-dark .observations-text,
+.wmf-dark .pending-sub { color: #cdd8ea; }
+.wmf-dark .result-notes-label,
+.wmf-dark .observations-label,
+.wmf-dark .today-title,
+.wmf-dark .result-cal-unit,
+.wmf-dark .macro-name { color: #9fb0cc; }
+.wmf-dark .result-cal-number,
+.wmf-dark .macro-value,
+.wmf-dark .today-summary { color: #ffffff; }
+.wmf-dark .photo-placeholder,
+.wmf-dark .placeholder-text { color: #9fb0cc; }
+.wmf-dark .photo-zone { background: #0f2f52; border-color: #1c4574; }
+.wmf-dark .today-stats {
+    background: #0f2f52;
+    border-color: #1c4574;
+}
+.wmf-dark .today-bar-track { background: #1c4574; }
+.wmf-dark .today-ref { color: #7f92b0; }
+.wmf-dark .field-label { color: #cdd8ea; }
+/* Dark mode: force the SLDS input/textarea to stay a white field with dark text
+   (custom-property styling hooks cascade through the base component's shadow DOM),
+   so typed meal notes and the logged date/time value remain readable on navy. */
+.wmf-dark .form-row {
+    --slds-c-input-color-background: #ffffff;
+    --slds-c-input-text-color: #16325c;
+    --slds-c-textarea-color-background: #ffffff;
+    --slds-c-textarea-text-color: #16325c;
+    --sds-c-input-color-background: #ffffff;
+    --sds-c-input-text-color: #16325c;
+    --sds-c-textarea-color-background: #ffffff;
+    --sds-c-textarea-text-color: #16325c;
+}
+/* The textarea's inner field inherits `color`; the dark card was cascading a
+   light colour into it (light text on the now-white box). Force dark text. */
+.wmf-dark .notes-field { color: #16325c; }
+.wmf-dark .observations-section { border-top-color: #1c4574; }
+.wmf-dark .pending-card {
+    background: #24314a;
+    border-color: #3a4a68;
+}
+.wmf-dark .pending-text { color: #ffd479; }
+
+/* ── Read-only notice (non-owner viewing another profile) ── */
+.view-only-notice {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 1.5rem 1rem;
+    text-align: center;
+    background: #f3f2f2;
+    border-radius: 8px;
+    border: 1px dashed #c9c9c9;
+}
+.wmf-dark .view-only-notice {
+    background: #0f2f52;
+    border-color: #1c4574;
+}
+.view-only-text {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #5c6b82;
+}
+.wmf-dark .view-only-text { color: #9fb0cc; }
+
+/* ── Capture: photo zone ─────────────────────── */
+.photo-zone {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 240px;
+    background: #f3f3f3;
+    border: 2px dashed #c9c9c9;
+    border-radius: 12px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.photo-preview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.photo-retake-hint {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(0,0,0,0.45);
+    color: #fff;
+    text-align: center;
+    padding: 0.35rem 0;
+    font-size: 0.8rem;
+}
+
+.photo-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #6b6b6b;
+    pointer-events: none;
+}
+
+.placeholder-text { margin-top: 0.5rem; font-size: 0.9rem; }
+
+/* ── Gallery button ──────────────────────────── */
+.gallery-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.45rem 1rem;
+    border: 1px solid #0070d2;
+    border-radius: 4px;
+    color: #0070d2;
+    background: #fff;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 600;
+    align-self: center;
+}
+
+/* ── Hidden elements ─────────────────────────── */
+.hidden-input,
+.hidden-canvas { display: none; }
+
+/* ── Own field labels (so they can flip colour in dark mode; SLDS base
+      component labels live in shadow DOM and can't be themed by scoped CSS) ── */
+/* Center the Logged Date & Time field (label + inputs) */
+.datetime-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+.datetime-field {
+    width: auto;
+    max-width: 360px;
+}
+
+.field-label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: #444;
+    margin-bottom: 0.15rem;
+}
+
+/* ── Action row ──────────────────────────────── */
+.action-row {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+/* ── Analysing overlay ───────────────────────── */
+.analysing-overlay {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem;
+    padding: 3rem 1rem;
+    text-align: center;
+}
+
+.analysing-text { margin: 0; color: #444; font-size: 1rem; }
+
+/* ── Result grid — 1-col mobile, 2-col desktop ─ */
+.result-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+}
+
+@media (min-width: 640px) {
+    .result-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-areas:
+            "photo  chart"
+            "action action";
+        gap: 1.5rem;
+        align-items: start;
+    }
+    .result-photo-section  { grid-area: photo;  }
+    .result-chart-section  { grid-area: chart;  }
+    .result-action-section { grid-area: action; }
+}
+
+/* ── Result photo (shown in complete + pending) ─ */
+.result-photo-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.result-photo {
+    width: 100%;
+    max-height: 320px;
+    object-fit: cover;
+    border-radius: 10px;
+    display: block;
+}
+
+.pending-photo {
+    width: 100%;
+    max-height: 240px;
+    object-fit: cover;
+    border-radius: 10px;
+    display: block;
+    opacity: 0.8;
+}
+
+.result-notes-block { padding: 0.25rem 0; }
+.result-notes-label {
+    margin: 0 0 0.2rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #6b6b6b;
+}
+.result-notes-text { margin: 0; font-size: 0.875rem; color: #333; line-height: 1.5; }
+
+/* ── SLDS-style tile wrapper (Your Notes, Analysing, Meal Observations) ── */
+.wmf-tile {
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    box-sizing: border-box;
+}
+.analysing-tile { max-width: 420px; }
+/* Dark mode variant — SLDS navy, matches the rest of the dark theme */
+.wmf-dark .wmf-tile {
+    background: #0f2f52;
+    border-color: #1c4574;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+/* ── Pie chart ───────────────────────────────── */
+.result-chart-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.pie-chart {
+    width: 100%;
+    max-width: 220px;
+}
+
+.pie-text { pointer-events: none; }
+
+.pie-label-name {
+    font-size: 10px;
+    font-weight: 700;
+    fill: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.pie-label-pct {
+    font-size: 13px;
+    font-weight: 800;
+    fill: #fff;
+}
+
+/* ── Calories ────────────────────────────────── */
+.result-calories {
+    text-align: center;
+    line-height: 1.1;
+}
+
+.result-cal-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #111;
+}
+
+.result-cal-unit {
+    font-size: 0.8rem;
+    color: #6b6b6b;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-left: 0.25rem;
+}
+
+/* ── Macro grams grid ────────────────────────── */
+.macro-grid {
+    width: 100%;
+    max-width: 220px;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.macro-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.macro-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.dot-carbs   { background: #E03F4F; }
+.dot-protein { background: #639754; }
+.dot-fat     { background: #F8C463; }
+
+.macro-name  { flex: 1; color: #444; font-weight: 500; }
+.macro-value { color: #111; font-weight: 600; }
+
+/* ── AI Observations ─────────────────────────── */
+.observations-section {
+    width: 100%;
+    max-width: 320px;
+    border-top: 1px solid #e8e8e8;
+    padding-top: 0.75rem;
+}
+
+.observations-label {
+    margin: 0 0 0.3rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #6b6b6b;
+}
+
+.observations-greeting {
+    margin: 0 0 0.4rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: inherit;
+}
+
+.observations-text {
+    margin: 0;
+    font-size: 0.875rem;
+    color: #333;
+    line-height: 1.55;
+    white-space: pre-line;
+}
+
+/* ── Pending card ────────────────────────────── */
+.pending-card {
+    text-align: center;
+    padding: 1.5rem 1rem;
+    background: #fffbf0;
+    border: 1px solid #f0d070;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.pending-text { margin: 0; font-size: 1rem; color: #8a6200; font-weight: 600; }
+.pending-sub  { margin: 0; font-size: 0.85rem; color: #6b6b6b; }
+
+/* ── Today's progress card ──────────────────── */
+.today-stats {
+    width: 100%;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.today-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+.today-title {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: #6b6b6b;
+}
+
+.today-summary { font-size: 0.875rem; font-weight: 600; color: #111; }
+
+.today-bar-track {
+    width: 100%;
+    height: 8px;
+    background: #f0f0f0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.today-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.4s ease, background-color 0.4s ease;
+    min-width: 2px;
+}
+
+.today-ref { margin: 0; font-size: 0.7rem; color: #9e9e9e; text-align: right; }
+
+/* ── Today's Meals timeline card ──────────────── */
+.today-meals-card {
+    width: 100%;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.55rem;
+    box-sizing: border-box;
+    overflow: hidden; /* prevent OOR tiles from stretching the card */
+}
+
+.today-meals-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.timeline-title-group {
+    display: flex;
+    align-items: baseline;
+    gap: 0.45rem;
+}
+
+.timeline-date-badge {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #5c6b82;
+}
+
+.timeline-nav {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Fasting ratio badge — centred between title and nav chevrons */
+.fasting-ratio {
+    flex: 1;
+    text-align: center;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+}
+
+/* Invisible spacer keeps the three-column header balanced when no ratio */
+.fasting-ratio-placeholder {
+    flex: 1;
+}
+
+.tl-empty {
+    margin: 0.25rem 0 0.1rem;
+    font-size: 0.8rem;
+    color: #9e9e9e;
+    text-align: center;
+    padding: 0.5rem 0;
+}
+
+.wmf-dark .timeline-date-badge { color: #9fb0cc; }
+.wmf-dark .tl-empty { color: #6a82a0; }
+
+/* Outer row: sunrise icon — tl-area — sunset icon */
+.tl-wrap {
+    display: flex;
+    align-items: flex-start;
+    width: 100%;
+    gap: 6px;
+    padding-top: 8px; /* vertically align icons with the dotted baseline at top: 8px */
+}
+
+.tl-icon {
+    font-size: 1.1rem;
+    line-height: 1;
+    flex-shrink: 0;
+    user-select: none;
+}
+
+.tl-edge-label {
+    font-size: 0.57rem;
+    font-weight: 700;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    flex-shrink: 0;
+    padding-top: 2px; /* nudge to sit on the dotted baseline visually */
+}
+
+.wmf-dark .tl-edge-label { color: #6a82a0; }
+
+/* The area between icons: baseline + time labels + pipe + tiles */
+.tl-area {
+    flex: 1;
+    position: relative;
+    /* label(~9px) + pipe(13px) + gap(4px) + tile(50px) + slack */
+    height: 90px;
+    overflow: visible;
+}
+
+/* Continuous dotted horizontal line */
+.tl-baseline {
+    position: absolute;
+    top: 8px;
+    left: 0;
+    right: 0;
+    height: 0;
+    border-top: 2px dotted #c0c4cc;
+}
+
+/* Explicit position:relative wrapper — guarantees it is the containing block for
+   absolutely-positioned .tl-cluster children, independent of LWC CSS scoping on
+   the flex-item parent (.tl-area). */
+.tl-plot {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+/* Each cluster starts at the very top so the time label sits above the baseline */
+.tl-cluster {
+    position: absolute;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 2;
+    /* transform set inline per cluster (translateX(-50%) or override for OOR) */
+}
+
+/* Time label above the pipe — background clears the dotted line behind it */
+.tl-pipe-time {
+    font-size: 0.55rem;
+    font-weight: 700;
+    color: #666;
+    text-align: center;
+    white-space: nowrap;
+    line-height: 1;
+    margin-bottom: 1px;
+    background: #fff;
+    padding: 0 2px;
+    z-index: 3;
+    position: relative;
+}
+
+/* Vertical pipe/tick; sits just below the dotted baseline */
+.tl-pipe {
+    width: 2px;
+    height: 13px;
+    background: #888;
+    border-radius: 1px;
+    flex-shrink: 0;
+}
+
+/* Tile row below the pipe */
+.tl-tiles-row {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 3px;
+    margin-top: 4px;
+}
+
+/* Individual meal preview tile */
+.wmf-meal-tile {
+    width: 50px;
+    height: 50px;
+    border-radius: 7px;
+    overflow: hidden;
+    border: 2px solid #d8d8d8;
+    cursor: pointer;
+    flex-shrink: 0;
+    background: #f0f0f0;
+    transition: border-color 0.15s ease, transform 0.12s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    outline: none;
+}
+
+.wmf-meal-tile:hover,
+.wmf-meal-tile:focus {
+    border-color: #0070d2;
+    transform: scale(1.1);
+    z-index: 3;
+}
+
+/* Red border (4px) for meals logged outside the 6 AM – 6 PM window */
+.wmf-meal-tile--oor {
+    border: 4px solid #ba0517 !important;
+    box-shadow: 0 0 0 2px rgba(186, 5, 23, 0.2);
+}
+
+.tile-thumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    pointer-events: none;
+}
+
+.tile-no-img {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #c183f2;
+}
+
+/* ── Result view: logged time ─────────────────── */
+.result-logged-time {
+    font-size: 0.8rem;
+    color: #555;
+    font-style: italic;
+}
+
+/* ── Dark mode — timeline card ────────────────── */
+.wmf-dark .today-meals-card {
+    background: #0f2f52;
+    border-color: #1c4574;
+}
+.wmf-dark .tl-baseline {
+    border-color: #2a4a6e;
+}
+.wmf-dark .tl-marker {
+    color: #6a82a0;
+    background: #0f2f52; /* must match dark card background */
+}
+.wmf-dark .tl-pipe {
+    background: #5b7a9e;
+}
+.wmf-dark .tl-pipe-time {
+    color: #9fb0cc;
+    background: #0f2f52;
+}
+.wmf-dark .wmf-meal-tile {
+    border-color: #2a4a6e;
+    background: #0a2540;
+}
+.wmf-dark .wmf-meal-tile:hover,
+.wmf-dark .wmf-meal-tile:focus {
+    border-color: #5b9bd5;
+}
+.wmf-dark .wmf-meal-tile--oor {
+    border: 4px solid #e03f4f !important;
+    box-shadow: 0 0 0 2px rgba(224, 63, 79, 0.25);
+}
+.wmf-dark .tile-no-img {
+    background: #c183f2;
+}
+.wmf-dark .result-logged-time {
+    color: #9fb0cc;
+}

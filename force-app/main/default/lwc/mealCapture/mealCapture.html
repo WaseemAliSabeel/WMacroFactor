@@ -1,0 +1,436 @@
+<template>
+    <div class={rootClass}>
+
+        <!-- Header: Welcome title (left) + Refresh/theme-toggle icons (right) -->
+        <div class="wmf-header">
+            <template lwc:if={hasNutritionProfile}>
+                <span class="welcome-title">
+                    <template lwc:if={profileFirstName}>Welcome <span class="wmf-name-gradient">{profileFirstName}</span></template>
+                    <template lwc:else>Welcome</template>
+                </span>
+            </template>
+            <template lwc:else>
+                <span class="welcome-title">&nbsp;</span>
+            </template>
+            <div class="wmf-header-actions">
+                <lightning-button-icon
+                    class="profile-switch"
+                    icon-name="utility:rotate"
+                    variant="brand"
+                    size="x-small"
+                    alternative-text="Switch Nutrition Profile"
+                    title="Switch Nutrition Profile"
+                    onclick={handleOpenProfileModal}>
+                </lightning-button-icon>
+                <lightning-button-icon
+                    class="theme-toggle"
+                    icon-name={themeIcon}
+                    variant="brand"
+                    size="x-small"
+                    alternative-text={themeAltText}
+                    title={themeAltText}
+                    onclick={toggleTheme}>
+                </lightning-button-icon>
+            </div>
+        </div>
+
+        <!-- ── Nutrition Profile switcher modal ──────────────────── -->
+        <template lwc:if={showProfileModal}>
+            <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="profile-modal-heading"
+                class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <header class="slds-modal__header wmf-modal-header">
+                        <button class="slds-button slds-button_icon slds-modal__close slds-button_icon-inverse"
+                            title="Close" onclick={handleCloseProfileModal}>
+                            <lightning-icon icon-name="utility:close" size="small" variant="inverse" alternative-text="Close"></lightning-icon>
+                        </button>
+                        <h2 id="profile-modal-heading" class="slds-text-heading_medium wmf-modal-title">Select Nutrition Profile</h2>
+                    </header>
+                    <div class="slds-modal__content slds-p-around_medium">
+                        <template lwc:if={isLoadingProfileOptions}>
+                            <lightning-spinner size="small" alternative-text="Loading Nutrition Profiles"></lightning-spinner>
+                        </template>
+                        <template lwc:elseif={hasProfileOptions}>
+                            <div class="wmf-profile-tile-grid" role="radiogroup" aria-label="Nutrition Profiles">
+                                <template for:each={profileTiles} for:item="tile">
+                                    <div key={tile.profileId}
+                                         class={tile.tileClass}
+                                         data-id={tile.profileId}
+                                         onclick={handleTileClick}
+                                         onkeydown={handleTileKeydown}
+                                         role="radio"
+                                         aria-checked={tile.ariaChecked}
+                                         tabindex="0">
+                                        <div class={tile.checkClass}>
+                                            <template lwc:if={tile.isSelected}>
+                                                <lightning-icon icon-name="utility:check" size="x-small" variant="inverse"></lightning-icon>
+                                            </template>
+                                        </div>
+                                        <!-- User avatar -->
+                                        <template lwc:if={tile.photoUrl}>
+                                            <img src={tile.photoUrl} alt={tile.fullUserName} class="wmf-tile-avatar"/>
+                                        </template>
+                                        <template lwc:else>
+                                            <div class="wmf-tile-avatar wmf-tile-avatar--placeholder">
+                                                <lightning-icon icon-name="standard:person_account" size="x-small" alternative-text={tile.fullUserName}></lightning-icon>
+                                            </div>
+                                        </template>
+                                        <div class="wmf-tile-content">
+                                            <p class="wmf-tile-name">{tile.fullUserName}</p>
+                                            <p class="wmf-tile-meta">{tile.metaLine}</p>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+                        <template lwc:else>
+                            <p>No Nutrition Profiles found.</p>
+                        </template>
+                    </div>
+                    <footer class="slds-modal__footer">
+                        <lightning-button label="Cancel" onclick={handleCloseProfileModal}></lightning-button>
+                        <lightning-button variant="brand" label="Select" class="slds-m-left_x-small"
+                            disabled={isConfirmSelectionDisabled} onclick={handleConfirmProfileSelection}>
+                        </lightning-button>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+        </template>
+
+        <!-- ── Loading: checking for a Nutrition Profile ─────────── -->
+        <template lwc:if={isProfileLoading}>
+            <div class="profile-gate-loading">
+                <lightning-spinner size="small" alternative-text="Checking Nutrition Profile"></lightning-spinner>
+            </div>
+        </template>
+
+        <!-- ── No Nutrition Profile — gate all capture content ───── -->
+        <template lwc:elseif={showProfileGate}>
+            <div class="profile-gate-card">
+                <lightning-icon icon-name="utility:warning" size="medium" variant="warning" alternative-text="Warning"></lightning-icon>
+                <p class="profile-gate-text">Please Create a Nutrition Profile first in order to log your Meals</p>
+                <lightning-button variant="brand" label="Create Nutrition Profile" onclick={handleCreateProfile}></lightning-button>
+            </div>
+        </template>
+
+        <!-- ── Has a Nutrition Profile — full capture UI below ───── -->
+        <template lwc:else>
+
+        <!-- ── Capture phase ─────────────────────────────────────── -->
+        <template lwc:if={isCapture}>
+
+            <!-- ── Log-meal form: visible only to profile owner or System Admin ── -->
+            <template lwc:if={canLogMeals}>
+                <canvas class="hidden-canvas"></canvas>
+
+                <label class="photo-zone">
+                    <input type="file" accept="image/*" capture="environment"
+                        data-id="camera-input" onchange={handleFileSelected} class="hidden-input"/>
+                    <template lwc:if={hasPhoto}>
+                        <img src={photoPreviewUrl} alt="Meal preview" class="photo-preview"/>
+                        <span class="photo-retake-hint">Tap to retake</span>
+                    </template>
+                    <template lwc:else>
+                        <div class="photo-placeholder">
+                            <lightning-icon icon-name="utility:image" size="large" alternative-text="Add photo"></lightning-icon>
+                            <p class="placeholder-text">Tap to take a photo</p>
+                        </div>
+                    </template>
+                </label>
+
+                <label class="gallery-btn">
+                    <input type="file" accept="image/*" data-id="gallery-input"
+                        onchange={handleFileSelected} class="hidden-input"/>
+                    <lightning-icon icon-name="utility:upload" size="x-small" alternative-text="Upload"></lightning-icon>
+                    <span>Upload from Gallery</span>
+                </label>
+
+                <div class="form-row">
+                    <span class="field-label">Describe your meal</span>
+                    <lightning-textarea variant="label-hidden" label="Describe your meal"
+                        placeholder="e.g. Grilled chicken salad with olive oil dressing"
+                        value={mealNotes} onchange={handleNotesChange}
+                        max-length="1000" class="notes-field">
+                    </lightning-textarea>
+                </div>
+
+                <div class="form-row datetime-row">
+                    <span class="field-label">Logged Date &amp; Time</span>
+                    <lightning-input class="datetime-field" variant="label-hidden" type="datetime" label="Logged Date &amp; Time"
+                        value={loggedDateTime} max={maxDateTime} onchange={handleLoggedDateTimeChange}>
+                    </lightning-input>
+                </div>
+
+                <div class="action-row">
+                    <lightning-button variant="brand" label="Log Meal"
+                        icon-name="utility:classic_interface" icon-position="right"
+                        disabled={isLogDisabled}
+                        onclick={handleSave}>
+                    </lightning-button>
+                </div>
+            </template>
+
+            <!-- ── Read-only notice when viewing another user's profile ── -->
+            <template lwc:else>
+                <div class="view-only-notice">
+                    <lightning-icon icon-name="utility:preview" size="small" alternative-text="View only"></lightning-icon>
+                    <template lwc:if={isActiveProfileInactive}>
+                        <p class="view-only-text"><strong>{profileFirstName}</strong>'s profile is inactive, so meals can't be logged here. Switch to an active profile to log meals.</p>
+                    </template>
+                    <template lwc:else>
+                        <p class="view-only-text">Viewing <strong>{profileFirstName}</strong>'s profile. Switch to your own profile to log meals.</p>
+                    </template>
+                </div>
+            </template>
+
+        </template>
+
+        <!-- ── Analysing — dynamic icon + message ───────────────── -->
+        <template lwc:elseif={isAnalysing}>
+            <div class="analysing-overlay">
+                <lightning-dynamic-icon type="eq" option="play"
+                    alternative-text="Meal Analysis in progress">
+                </lightning-dynamic-icon>
+                <div class="wmf-tile analysing-tile">
+                    <p class="analysing-text">Sending Meal to Gemini for Analysis &amp; breakdown…</p>
+                </div>
+            </div>
+        </template>
+
+        <!-- ── Results — 2-col desktop / 1-col mobile ───────────── -->
+        <template lwc:elseif={isComplete}>
+            <div class="result-grid">
+
+                <!-- LEFT / TOP: photo + notes -->
+                <div class="result-photo-section">
+                    <template lwc:if={hasPhoto}>
+                        <img src={photoPreviewUrl} alt="Logged meal" class="result-photo"/>
+                    </template>
+                    <template lwc:if={hasMealNotes}>
+                        <div class="result-notes-block wmf-tile">
+                            <p class="result-notes-label">Your Notes</p>
+                            <p class="result-notes-text">{mealNotes}</p>
+                        </div>
+                    </template>
+                    <template lwc:if={resultLoggedTime}>
+                        <div class="result-notes-block wmf-tile">
+                            <p class="result-notes-label">Logged</p>
+                            <p class="result-notes-text result-logged-time">{resultLoggedTime}</p>
+                        </div>
+                    </template>
+                </div>
+
+                <!-- RIGHT / BOTTOM: pie chart + calories + macro grams + observations -->
+                <div class="result-chart-section">
+
+                    <!-- SVG Pie chart (220×220 viewBox, centre 110 110, r 100) -->
+                    <svg viewBox="0 0 220 220" class="pie-chart" aria-hidden="true">
+                        <!-- Carbs slice — red/maroon -->
+                        <path d={carbsSlice.path} fill="#E03F4F"/>
+                        <template lwc:if={carbsSlice.showText}>
+                            <text x={carbsSlice.tx} y={carbsSlice.ty}
+                                  class="pie-text" text-anchor="middle">
+                                <tspan x={carbsSlice.tx} dy="-0.45em" class="pie-label-name">Carbs</tspan>
+                                <tspan x={carbsSlice.tx} dy="1.15em" class="pie-label-pct">{resultCarbsPct}%</tspan>
+                            </text>
+                        </template>
+                        <!-- Protein slice — green/teal -->
+                        <path d={proteinSlice.path} fill="#639754"/>
+                        <template lwc:if={proteinSlice.showText}>
+                            <text x={proteinSlice.tx} y={proteinSlice.ty}
+                                  class="pie-text" text-anchor="middle">
+                                <tspan x={proteinSlice.tx} dy="-0.45em" class="pie-label-name">Protein</tspan>
+                                <tspan x={proteinSlice.tx} dy="1.15em" class="pie-label-pct">{resultProteinPct}%</tspan>
+                            </text>
+                        </template>
+                        <!-- Fat slice — yellow -->
+                        <path d={fatSlice.path} fill="#F8C463"/>
+                        <template lwc:if={fatSlice.showText}>
+                            <text x={fatSlice.tx} y={fatSlice.ty}
+                                  class="pie-text" text-anchor="middle">
+                                <tspan x={fatSlice.tx} dy="-0.45em" class="pie-label-name">Fat</tspan>
+                                <tspan x={fatSlice.tx} dy="1.15em" class="pie-label-pct">{resultFatPct}%</tspan>
+                            </text>
+                        </template>
+                    </svg>
+
+                    <!-- Calories -->
+                    <div class="result-calories">
+                        <span class="result-cal-number">{resultCalories}</span>
+                        <span class="result-cal-unit">kcal</span>
+                    </div>
+
+                    <!-- Macro grams -->
+                    <div class="macro-grid">
+                        <div class="macro-row">
+                            <span class="macro-dot dot-carbs"></span>
+                            <span class="macro-name">Carbs</span>
+                            <span class="macro-value">{resultCarbsG}g</span>
+                        </div>
+                        <div class="macro-row">
+                            <span class="macro-dot dot-protein"></span>
+                            <span class="macro-name">Protein</span>
+                            <span class="macro-value">{resultProteinG}g</span>
+                        </div>
+                        <div class="macro-row">
+                            <span class="macro-dot dot-fat"></span>
+                            <span class="macro-name">Fat</span>
+                            <span class="macro-value">{resultFatG}g</span>
+                        </div>
+                    </div>
+
+                    <!-- AI Observations -->
+                    <template lwc:if={hasMealAnalysis}>
+                        <div class="observations-section wmf-tile">
+                            <p class="observations-label">Meal Analysis</p>
+                            <template lwc:if={profileFirstName}>
+                                <p class="observations-greeting">Dear <span class="wmf-name-gradient">{profileFirstName}</span>,</p>
+                            </template>
+                            <p class="observations-text">{resultMealAnalysis}</p>
+                        </div>
+                    </template>
+                </div>
+
+                <!-- FULL-WIDTH: action button -->
+                <div class="result-action-section">
+                    <div class="action-row">
+                        <lightning-button variant="brand" label="Log Another Meal"
+                            icon-name="utility:classic_interface" icon-position="right"
+                            onclick={handleLogAnother}>
+                        </lightning-button>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <!-- ── Pending / failed ──────────────────────────────────── -->
+        <template lwc:else>
+            <!-- Keep photo visible on failure too -->
+            <template lwc:if={hasPhoto}>
+                <img src={photoPreviewUrl} alt="Logged meal" class="pending-photo"/>
+            </template>
+
+            <template lwc:if={showPendingCard}>
+                <div class="pending-card">
+                    <lightning-icon icon-name="utility:clock" size="medium" alternative-text="Pending"></lightning-icon>
+                    <p class="pending-text">Analysis Pending</p>
+                    <p class="pending-sub">Your meal was saved. The automated sweep will retry analysis shortly.</p>
+                </div>
+            </template>
+
+            <div class="action-row">
+                <lightning-button variant="brand" label="Log Another Meal"
+                    icon-name="utility:classic_interface" icon-position="right"
+                    onclick={handleLogAnother}>
+                </lightning-button>
+            </div>
+        </template>
+
+        <!-- ── Today's progress — outside chain, hidden during spinner ── -->
+        <template lwc:if={showTodayStats}>
+            <div class="today-stats">
+                <div class="today-header">
+                    <span class="today-title">{todayStatsDateLabel}</span>
+                    <span class="today-summary">{todayMealCount} meal{todayMealPlural} · {todayCalories} kcal</span>
+                </div>
+                <div class="today-bar-track">
+                    <div class="today-bar-fill" style={todayBarStyle}></div>
+                </div>
+                <p class="today-ref">{todayCaloriesPct}% of {calorieTarget} kcal daily reference</p>
+            </div>
+
+            <!-- ── Meal Timeline card — shown when today has meals OR viewing a past day ── -->
+            <template lwc:if={showMealTimeline}>
+                <div class="today-meals-card">
+
+                    <!-- Header: title+date (left) · fasting ratio (centre) · nav (right) -->
+                    <div class="today-meals-header">
+                        <div class="timeline-title-group">
+                            <span class="today-title">Meal Timeline</span>
+                            <span class="timeline-date-badge">{timelineDateLabel}</span>
+                        </div>
+                        <template lwc:if={fastingRatio}>
+                            <span class="fasting-ratio" style={fastingRatioStyle}>{fastingRatio.label}</span>
+                        </template>
+                        <template lwc:else>
+                            <span class="fasting-ratio-placeholder"></span>
+                        </template>
+                        <div class="timeline-nav">
+                            <lightning-button-icon
+                                icon-name="utility:chevronleft"
+                                variant="border-filled"
+                                size="x-small"
+                                alternative-text="Previous day"
+                                title="Previous day"
+                                onclick={handleTimelinePrev}>
+                            </lightning-button-icon>
+                            <lightning-button-icon
+                                icon-name="utility:chevronright"
+                                variant="border-filled"
+                                size="x-small"
+                                alternative-text="Next day"
+                                title="Next day"
+                                disabled={isTimelineToday}
+                                onclick={handleTimelineNext}>
+                            </lightning-button-icon>
+                        </div>
+                    </div>
+
+                    <!-- Timeline body: shown when meals exist for the selected day -->
+                    <template lwc:if={hasTodayMeals}>
+                        <!-- Unified timeline: icons flank a relative area with
+                             baseline, meal-time labels, pipes and tile rows -->
+                        <div class="tl-wrap" aria-label="Meal timeline">
+                            <span class="tl-icon" aria-hidden="true">&#127749;</span>
+                            <div class="tl-area">
+                                <!-- Continuous dotted baseline -->
+                                <div class="tl-baseline"></div>
+                                <!-- tl-plot is an explicit position:relative wrapper so that
+                                     absolutely-positioned clusters always find the correct
+                                     containing block regardless of LWC CSS scoping -->
+                                <div class="tl-plot">
+                                    <template for:each={timelineClusters} for:item="cluster">
+                                        <div key={cluster.key} class="tl-cluster" style={cluster.style}>
+                                            <span class="tl-pipe-time">{cluster.timeLabel}</span>
+                                            <div class="tl-pipe"></div>
+                                            <div class="tl-tiles-row">
+                                                <template for:each={cluster.meals} for:item="tile">
+                                                    <div key={tile.mealId}
+                                                         class={tile.tileClass}
+                                                         data-meal-id={tile.mealId}
+                                                         onclick={handleMealTileClick}
+                                                         tabindex="0"
+                                                         role="button"
+                                                         title={tile.timeStr}
+                                                         aria-label={tile.timeStr}>
+                                                        <template lwc:if={tile.thumbnailUrl}>
+                                                            <img src={tile.thumbnailUrl} alt="Meal" class="tile-thumb" loading="lazy"/>
+                                                        </template>
+                                                        <template lwc:else>
+                                                            <div class="tile-no-img">
+                                                                <lightning-icon icon-name="utility:food_and_drink" size="small" alternative-text="Meal"></lightning-icon>
+                                                            </div>
+                                                        </template>
+                                                    </div>
+                                                </template>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                            <span class="tl-icon" aria-hidden="true">&#127751;</span>
+                        </div>
+                    </template>
+                    <template lwc:else>
+                        <p class="tl-empty">No meals logged on this day.</p>
+                    </template>
+
+                </div>
+            </template>
+        </template>
+
+        </template>
+
+    </div>
+</template>

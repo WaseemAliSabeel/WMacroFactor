@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>My_Yesterday_s_Meals</fullName>
+    <columns>NAME</columns>
+    <columns>Logged_DateTime__c</columns>
+    <columns>Calories__c</columns>
+    <columns>Meal_Notes__c</columns>
+    <columns>Meal_Analysis__c</columns>
+    <columns>Status__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Logged_DateTime__c</field>
+        <operation>equals</operation>
+        <value>YESTERDAY</value>
+    </filters>
+    <filters>
+        <field>NP_Current_User__c</field>
+        <operation>equals</operation>
+        <value>1</value>
+    </filters>
+    <label>My Yesterday&apos;s Meals</label>
+</ListView>

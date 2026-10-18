@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Daily_Caloric_Threshold__c</fullName>
+    <defaultValue>2000</defaultValue>
+    <description>Daily calorie target for this profile. Drives the reference line on the Daily Calorie Trend chart and the target on the Today progress bar in the meal capture UI.</description>
+    <externalId>false</externalId>
+    <label>Daily Caloric Threshold (in kcal)</label>
+    <precision>4</precision>
+    <required>false</required>
+    <scale>0</scale>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlexiPage xmlns="http://soap.sforce.com/2006/04/metadata">
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
+                <componentName>mealCapture</componentName>
+                <identifier>mealCapture</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>chartTitle</name>
+                    <value>Daily Calorie Trend</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>daysToShow</name>
+                    <value>10</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>theme</name>
+                    <value>Dark</value>
+                </componentInstanceProperties>
+                <componentName>mealCalorieTrend</componentName>
+                <identifier>c_mealCalorieTrend</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>chartTitle</name>
+                    <value>Daily Macro Distribution</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>daysToShow</name>
+                    <value>10</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>theme</name>
+                    <value>Dark</value>
+                </componentInstanceProperties>
+                <componentName>mealMacroTrend</componentName>
+                <identifier>mealMacroTrend</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>main</name>
+        <type>Region</type>
+    </flexiPageRegions>
+    <masterLabel>Log a Meal</masterLabel>
+    <template>
+        <name>flexipage:defaultAppHomeTemplate</name>
+    </template>
+    <type>AppPage</type>
+</FlexiPage>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningMessageChannel xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Broadcasts the current light/dark mode so WMacroFactor components on the same page toggle together.</description>
+    <isExposed>true</isExposed>
+    <lightningMessageFields>
+        <description>Dark or Light</description>
+        <fieldName>mode</fieldName>
+    </lightningMessageFields>
+    <masterLabel>Theme Sync</masterLabel>
+</LightningMessageChannel>

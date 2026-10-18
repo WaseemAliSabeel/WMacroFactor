@@ -1,0 +1,95 @@
+<template>
+    <div class={cardClass}>
+
+        <template lwc:if={isRefreshing}>
+            <lightning-spinner size="small" alternative-text="Refreshing chart"></lightning-spinner>
+        </template>
+
+        <div class="trend-header">
+            <template lwc:if={showTitle}>
+                <span class="trend-title">{titlePrefix}<span class="wmf-name-gradient">{titleName}</span></span>
+            </template>
+            <lightning-button-icon class="trend-refresh"
+                icon-name="utility:refresh" variant="border-filled" size="x-small"
+                alternative-text="Refresh" title="Refresh"
+                onclick={handleRefresh}>
+            </lightning-button-icon>
+        </div>
+
+        <template lwc:if={hasError}>
+            <div class="trend-state">
+                <lightning-icon icon-name="utility:error" size="small" variant="error"
+                    alternative-text="Error"></lightning-icon>
+                <p class="state-text">{error}</p>
+            </div>
+        </template>
+
+        <template lwc:elseif={hasData}>
+            <svg class="trend-chart" viewBox={viewBox} preserveAspectRatio="xMidYMid meet"
+                role="img" aria-label="Line chart of daily calorie consumption">
+
+                <!-- Horizontal grid lines + y-axis labels (≤5, dynamic range) -->
+                <template for:each={gridLines} for:item="g">
+                    <g key={g.key}>
+                        <line class="grid-line" x1={g.x1} y1={g.y} x2={g.x2} y2={g.y}></line>
+                        <text class="axis-label y-label" x={g.labelX} y={g.labelY} text-anchor="end">{g.label}</text>
+                    </g>
+                </template>
+
+                <!-- Reference line (right-aligned label to avoid y-axis overlap) -->
+                <template lwc:if={showRefLine}>
+                    <line class="ref-line" x1={refLine.x1} y1={refLine.y} x2={refLine.x2} y2={refLine.y}></line>
+                    <text class="ref-label" x={refLine.labelX} y={refLine.labelY} text-anchor="end">{refLineLabel}</text>
+                </template>
+
+                <!-- Area fill (animated bottom-to-top) -->
+                <g class="calorie-area">
+                    <polygon points={areaPolygon} class="area-fill"></polygon>
+                </g>
+
+                <!-- Line -->
+                <g class="calorie-line">
+                    <polyline points={linePoints} class="line-path"></polyline>
+                </g>
+
+                <!-- Data points: each wrapped in .data-group for CSS hover tooltip -->
+                <template for:each={dataPoints} for:item="pt">
+                    <g key={pt.key} class="data-group" tabindex="0">
+                        <!-- Larger invisible hit area makes hover easier on both mouse and touch -->
+                        <circle cx={pt.x} cy={pt.y} r="14" class="hit-area"></circle>
+                        <!-- Visible data point circle -->
+                        <circle cx={pt.x} cy={pt.y} r="5" class="data-point">
+                            <title>{pt.tooltip}</title>
+                        </circle>
+                        <!-- Calorie tooltip — visible on hover/focus via CSS -->
+                        <g class="calorie-tooltip">
+                            <rect x={pt.tooltipRectX} y={pt.tooltipRectY}
+                                  width={pt.tooltipRectW} height={pt.tooltipRectH}
+                                  rx={pt.tooltipRectR} class="tooltip-bg"></rect>
+                            <text x={pt.tooltipTx} y={pt.tooltipTy}
+                                  text-anchor="middle" class="tooltip-text">{pt.calLabel}</text>
+                        </g>
+                    </g>
+                </template>
+
+                <!-- x-axis date labels and meal counts -->
+                <template for:each={dataPoints} for:item="pt">
+                    <g key={pt.labelKey}>
+                        <text class="axis-label day-label" x={pt.x} y={pt.xLabelY} text-anchor="middle">{pt.dateLabel}</text>
+                        <text class="meal-count" x={pt.x} y={pt.mealLabelY} text-anchor="middle">{pt.mealLabel}</text>
+                    </g>
+                </template>
+
+            </svg>
+        </template>
+
+        <template lwc:else>
+            <div class="trend-state">
+                <lightning-icon icon-name="utility:chart" size="small"
+                    alternative-text="No data"></lightning-icon>
+                <p class="state-text">No analyzed meals in this period yet.</p>
+            </div>
+        </template>
+
+    </div>
+</template>

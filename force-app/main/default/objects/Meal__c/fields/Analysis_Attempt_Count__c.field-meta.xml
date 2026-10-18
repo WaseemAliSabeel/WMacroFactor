@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Analysis_Attempt_Count__c</fullName>
+    <defaultValue>0</defaultValue>
+    <description>Number of times the Gemini callout has been attempted for this meal. Phase 2 retry logic uses this against the FR-08 max-attempt threshold.</description>
+    <externalId>false</externalId>
+    <label>Analysis Attempt Count</label>
+    <precision>3</precision>
+    <required>false</required>
+    <scale>0</scale>
+    <trackTrending>false</trackTrending>
+    <type>Number</type>
+    <unique>false</unique>
+</CustomField>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Last_Meal_Reminder_Sent__c</fullName>
+    <description>Timestamp of the most-recent meal-logging reminder (automated or manual). Used to prevent duplicate reminders within the same meal cycle.</description>
+    <label>Last Meal Reminder Sent</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>DateTime</type>
+</CustomField>

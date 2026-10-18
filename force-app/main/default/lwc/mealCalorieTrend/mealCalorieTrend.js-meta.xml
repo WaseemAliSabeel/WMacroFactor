@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>66.0</apiVersion>
+    <isExposed>true</isExposed>
+    <masterLabel>Daily Calorie Trend</masterLabel>
+    <description>Line chart of daily total calorie consumption for the active Nutrition Profile, with a 2000 kcal reference line. Auto-refreshes when a meal is logged.</description>
+    <targets>
+        <target>lightning__AppPage</target>
+        <target>lightning__HomePage</target>
+        <target>lightning__RecordPage</target>
+        <target>lightning__Tab</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightning__AppPage,lightning__HomePage,lightning__RecordPage">
+            <property name="daysToShow" type="Integer" default="10"
+                label="Days to show"
+                description="Number of recent days (including today) to plot on the x-axis."/>
+            <property name="theme" type="String" default="Dark" datasource="Dark,Light"
+                label="Theme"
+                description="Dark = SLDS navy (matches a dark dashboard); Light = white."/>
+            <property name="chartTitle" type="String" default="Daily Calorie Trend"
+                label="Chart title"
+                description="Heading above the chart, personalised with the active profile's first name. Leave blank to hide."/>
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

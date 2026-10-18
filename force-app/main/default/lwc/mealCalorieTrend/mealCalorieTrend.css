@@ -1,0 +1,181 @@
+:host {
+    display: block;
+}
+
+.wmf-trend-card {
+    font-family: var(--lwc-fontFamily, 'Salesforce Sans', Arial, sans-serif);
+    background: var(--wmf-surface);
+    color: var(--wmf-ink);
+    border: 1px solid var(--wmf-border);
+    border-radius: 0.25rem;
+    box-sizing: border-box;
+    width: 100%;
+    position: relative;
+}
+
+/* ── Dark theme ──────────────────────────────────────────────────────────── */
+.theme-dark {
+    --wmf-surface: #071b33;
+    --wmf-bg:      #071b33;
+    --wmf-ink:     #E2E8F0;
+    --wmf-muted:   #E2E8F0;
+    --wmf-grid:    rgba(226, 232, 240, 0.22);
+    --wmf-border:  transparent;
+    --wmf-tooltip-bg:     #1a3a5c;
+    --wmf-tooltip-stroke: #4a7abf;
+}
+
+/* ── Light theme ─────────────────────────────────────────────────────────── */
+.theme-light {
+    --wmf-surface: #ffffff;
+    --wmf-bg:      #ffffff;
+    --wmf-ink:     #001639;
+    --wmf-muted:   #5c6b82;
+    --wmf-grid:    rgba(0, 0, 0, 0.12);
+    --wmf-border:  #dce0e8;
+    --wmf-tooltip-bg:     #16325c;
+    --wmf-tooltip-stroke: #4a7abf;
+}
+
+/* ── Header ──────────────────────────────────────────────────────────────── */
+.trend-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+    margin-bottom: 0.75rem;
+}
+
+.trend-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--wmf-ink);
+    letter-spacing: 0.01em;
+}
+
+.wmf-name-gradient {
+    background: linear-gradient(90deg, #7B9EE8 0%, #D4688A 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+}
+
+.trend-refresh { flex: 0 0 auto; margin-left: auto; }
+
+@media (max-width: 640px) {
+    .trend-header { position: relative; padding-right: 1.75rem; }
+    .trend-refresh { position: absolute; top: 0; right: 0; transform: scale(0.8); transform-origin: top right; }
+}
+
+/* ── SVG ─────────────────────────────────────────────────────────────────── */
+.trend-chart {
+    width: 100%;
+    height: auto;
+    display: block;
+    font-family: var(--lwc-fontFamily, 'Salesforce Sans', Arial, sans-serif);
+    overflow: visible;
+}
+
+.grid-line { stroke: var(--wmf-grid); stroke-width: 1; stroke-dasharray: 3 3; }
+
+.axis-label { fill: var(--wmf-ink); font-size: 12px; }
+.day-label  { fill: var(--wmf-ink); font-size: 13px; font-weight: 600; }
+.meal-count { fill: var(--wmf-ink); font-size: 11px; }
+
+.ref-line  { stroke: #BA0517; stroke-width: 1.5; stroke-dasharray: 6 3; }
+.ref-label { fill: #BA0517; font-size: 11px; font-weight: 700; }
+
+/* ── Area fill — grows from bottom to top, mirroring the bar chart ────────
+   transform-box: fill-box anchors the transform to the polygon's own bounds;
+   transform-origin: center bottom puts the scale pivot at the baseline.        */
+.area-fill {
+    fill: rgba(0, 112, 210, 0.12);
+    transform-box: fill-box;
+    transform-origin: center bottom;
+    animation: wmf-area-grow 0.8s ease-out both;
+}
+
+@keyframes wmf-area-grow {
+    from { transform: scaleY(0); }
+    to   { transform: scaleY(1); }
+}
+
+/* ── Line — drawn left-to-right via stroke-dasharray ─────────────────────── */
+.line-path {
+    stroke: #0070d2;
+    stroke-width: 2.5;
+    fill: none;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    stroke-dasharray: 5000;
+    stroke-dashoffset: 5000;
+    animation: wmf-draw-line 1.2s ease-out both;
+}
+
+@keyframes wmf-draw-line {
+    to { stroke-dashoffset: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .line-path  { animation: none; stroke-dasharray: none; stroke-dashoffset: 0; }
+    .area-fill  { animation: none; }
+}
+
+/* ── Data point groups with hover tooltip ────────────────────────────────── */
+.hit-area {
+    fill: transparent;
+    cursor: pointer;
+}
+
+.data-point {
+    fill: #0070d2;
+    stroke: var(--wmf-bg);
+    stroke-width: 2;
+    transition: r 0.1s ease, transform 0.1s ease;
+    transform-box: fill-box;
+    transform-origin: center;
+}
+
+.data-group:hover .data-point,
+.data-group:focus .data-point {
+    transform: scale(1.4);
+}
+
+/* Calorie tooltip — hidden by default, revealed on hover or keyboard focus */
+.calorie-tooltip {
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    pointer-events: none;
+}
+
+.data-group:hover .calorie-tooltip,
+.data-group:focus .calorie-tooltip {
+    opacity: 1;
+}
+
+.tooltip-bg {
+    fill: var(--wmf-tooltip-bg);
+    stroke: var(--wmf-tooltip-stroke);
+    stroke-width: 1;
+}
+
+.tooltip-text {
+    fill: #ffffff;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+/* ── Empty / error state ─────────────────────────────────────────────────── */
+.trend-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 2.5rem 1rem;
+    text-align: center;
+}
+
+.state-text { margin: 0; font-size: 0.875rem; color: var(--wmf-muted); }
